@@ -33,7 +33,7 @@ export default function Usuarios({ navigation }) {
                             </TouchableOpacity>
 
                             <Text style={styles.DescriptionTask}
-                                onPress={() => navigation.navigate("Detalhes", {id: item.id, descricao: item.descricao,})}
+                                onPress={() => {}}
                                 > {item.descricao}
                             </Text>
                         </View>
