@@ -5,7 +5,7 @@ import {MaterialCommunityIcons} from "@expo/vector-icons"
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import {useNavigation} from '@react-navigation/native';
 
-export default function Login({ navigation }){
+export default function LoginEmpresa({ navigation }){
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [errorLogin, setErroLogin] = useState("")
@@ -16,7 +16,7 @@ export default function Login({ navigation }){
             .then((userCredential) => {
                 // Signed in
                 const user = userCredential.user;
-                navigation.navigate('Empresa')
+                navigation.navigate('Usuarios')
             })
             .catch((error) => {
                 setErroLogin(true)
@@ -35,7 +35,7 @@ export default function Login({ navigation }){
         <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.container}>
-                <Text style={styles.title}>Login</Text>
+                <Text style={styles.title}>Login Empresa</Text>
                 <TextInput
                     style={styles.input}
                     placeholder={"entre com o seu email"}
@@ -65,10 +65,6 @@ export default function Login({ navigation }){
                     <Text style={styles.textButtonLogin}>Login</Text>
                 </TouchableOpacity>
                 }
-                <Text style={styles.linkSubscribe}
-                    onPress={() => navigation.navigate("Login Empresa")}>
-                    Área Administrativa
-                </Text>
                 <View style={{height:100}}/>
         </KeyboardAvoidingView>
     )

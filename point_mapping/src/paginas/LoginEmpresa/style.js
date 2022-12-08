@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
         paddingTop: Platform.OS === "ios" ? 0 : 50
     },
     title: {
-        fontSize:48,
+        fontSize:38,
         color: "#F92E6A",
         marginBottom: 10,
         fontWeight: "bold"
@@ -54,8 +54,7 @@ const styles = StyleSheet.create({
     },
     linkSubscribe:{
         color: "#1877f2",
-        fontSize: 16,
-        paddingTop: 10
+        fontSize: 16
     }
 });
 

@@ -34,6 +34,8 @@ export default function Local() {
             let location = await Location.getCurrentPositionAsync({});
             setLatitude(location.coords.latitude);
             setLongitude(location.coords.longitude);
+            console.log("Latitude:" + location.coords.latitude)
+            console.log("Longitude:" + location.coords.longitude)
         })();
     }, []);
 
@@ -55,7 +57,7 @@ export default function Local() {
         }else{
             resposta = true;
         }
-        return (navigation.navigate("Ponto", {resultado: resposta}));
+        return (navigation.navigate("Ponto", {resultado: resposta, lat: position2.lat, lng: position2.lng}));
     }
 
     let text = '';
