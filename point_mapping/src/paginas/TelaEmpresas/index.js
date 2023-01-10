@@ -37,7 +37,7 @@ export default function Local() {
         })();
     }, []);
 
-    function getDistanceFromLatLonInKm(position1, position2) {
+    function getDistanceFromLatLonInKm(position1, position2, idempresa) {
         var deg2rad = function (deg) { return deg * (Math.PI / 180); },
             R = 6371,
             dLat = deg2rad(position2.lat - position1.lat),
@@ -55,7 +55,7 @@ export default function Local() {
         }else{
             resposta = true;
         }
-        return (navigation.navigate("Ponto", {resultado: resposta}));
+        return (navigation.navigate("Ponto", {resultado: resposta, lat: position2.lat, lng: position2.lng, empresa: idempresa}));
     }
 
     let text = '';
@@ -99,7 +99,7 @@ export default function Local() {
                             return (
                                 <View style={styles.Tasks}>
                                     <Text style={styles.DescriptionTask}
-                                        onPress={() => getDistanceFromLatLonInKm({ lat: item.lat, lng: item.lng }, { lat: latitude, lng: longitude })}
+                                        onPress={() => getDistanceFromLatLonInKm({ lat: item.lat, lng: item.lng }, { lat: latitude, lng: longitude }, item.id)}
                                     > {item.Nome}
                                     </Text>
                                 </View>
