@@ -10,7 +10,7 @@ import Login from "./src/paginas/Login";
 import Empresa from "./src/paginas/TelaEmpresas";
 import Ponto from "./src/paginas/Ponto";
 import LoginEmpresa from "./src/paginas/LoginEmpresa";
-
+//Ola
 const Stack = createStackNavigator();
 
 export default function App() {
