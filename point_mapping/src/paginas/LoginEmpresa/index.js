@@ -9,7 +9,6 @@ export default function LoginEmpresa({ navigation }){
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [errorLogin, setErroLogin] = useState("")
-    
     const loginFirebase = ()=>{
         const auth = getAuth();
         signInWithEmailAndPassword(auth, email, password)

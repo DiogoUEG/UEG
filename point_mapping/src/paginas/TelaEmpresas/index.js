@@ -3,25 +3,26 @@ import { Platform, Text, View, KeyboardAvoidingView, FlatList } from 'react-nati
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import styles from './style';
 import * as Location from 'expo-location';
-import firebase from "../../config/firebase";
+import db from '../../config/firebase';
 import {useNavigation} from '@react-navigation/native';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
 
-export default function Local() {
+export default function Empresa({ route, navigation }) {
     const [errorMsg, setErrorMsg] = useState(null);
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
     const [empresa, setEmpresa] = useState(null);
-    const database = firebase.firestore();
-    const navigation = useNavigation();
-
-    database.collection('Empresa').onSnapshot((query) => {
+    const days = ["Domingo", "Segunda-Feira", "Terça-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira", "Sábado"]
+    const d = new Date()
+    const dayName = days[d.getDay()]
+    const User = route.params.uid
+    onSnapshot(query(collection(db, 'Usuario-Empresa'), where("IdUsuario", "==", User), where("Nome_do_dia", "==", dayName)), (query) => {
         const list = [];
         query.forEach((doc) => {
             list.push({ ...doc.data(), id: doc.id });
         });
         setEmpresa(list);
     });
-
     useEffect(() => {
         (async () => {
 
@@ -37,7 +38,21 @@ export default function Local() {
         })();
     }, []);
 
-    function getDistanceFromLatLonInKm(position1, position2, idempresa) {
+    function getDistanceFromLatLonInKm(IdEmpresa) {
+        var position2 = { lat: latitude, lng: longitude }
+        query(collection(db, 'Empresa'), where("Nome", "==", IdEmpresa))
+        .then((userCredential) => {
+            var position1 = userCredential
+        })
+        .catch((error) => {
+            setErroLogin(true)
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(errorCode)
+            console.log(errorMessage)
+            // ..
+        });
+        console.log(position1)
         var deg2rad = function (deg) { return deg * (Math.PI / 180); },
             R = 6371,
             dLat = deg2rad(position2.lat - position1.lat),
@@ -55,7 +70,7 @@ export default function Local() {
         }else{
             resposta = true;
         }
-        return (navigation.navigate("Ponto", {resultado: resposta, lat: position2.lat, lng: position2.lng, empresa: idempresa}));
+        return (navigation.navigate("Ponto", {resultado: resposta, lat: position2.lat, lng: position2.lng, empresa: IdEmpresa}));
     }
 
     let text = '';
@@ -99,8 +114,8 @@ export default function Local() {
                             return (
                                 <View style={styles.Tasks}>
                                     <Text style={styles.DescriptionTask}
-                                        onPress={() => getDistanceFromLatLonInKm({ lat: item.lat, lng: item.lng }, { lat: latitude, lng: longitude }, item.id)}
-                                    > {item.Nome}
+                                        onPress={() => getDistanceFromLatLonInKm(item.IdEmpresa)}
+                                    > {item.IdEmpresa}
                                     </Text>
                                 </View>
                             )

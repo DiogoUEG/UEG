@@ -3,21 +3,17 @@ import { View, Text, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity
 import styles from "./style";
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigation } from '@react-navigation/native';
 
-export default function Login({ navigation }) {
+export default function Login( {navigation} ) {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [errorLogin, setErroLogin] = useState("")
-
-    
 
     const loginFirebase = () => {
         const auth = getAuth();
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                const user = userCredential.user.id;
-                navigation.navigate('Empresa')
+                navigation.navigate("Empresa", {uid: userCredential.user.uid,});
             })
             .catch((error) => {
                 setErroLogin(true)
@@ -27,6 +23,7 @@ export default function Login({ navigation }) {
                 console.log(errorMessage)
                 // ..
             });
+            
     }
 
     useEffect(() => {
@@ -67,7 +64,7 @@ export default function Login({ navigation }) {
                 </TouchableOpacity>
             }
             <Text style={styles.linkSubscribe}
-                onPress={() => navigation.navigate("Usuarios")}>
+                onPress={() => navigation.navigate("LoginEmpresa")}>
                 Se cadastre Agora...
             </Text>
             <View style={{ height: 100 }} />

@@ -7,7 +7,7 @@ import Usuarios from "./src/paginas/Usuarios";
 import NovoUsuario from "./src/paginas/NovoUsuario";
 import Detalhes from "./src/paginas/Detalhes";
 import Login from "./src/paginas/Login";
-import Local from "./src/paginas/TelaEmpresas";
+import Empresa from "./src/paginas/TelaEmpresas";
 import Ponto from "./src/paginas/Ponto";
 import LoginEmpresa from "./src/paginas/LoginEmpresa";
 
@@ -36,7 +36,7 @@ export default function App() {
 
         <Stack.Screen
           name="Empresa"
-          component={Local}
+          component={Empresa}
           options={{
             headerTintColor: "#F92E6A"
           }}
