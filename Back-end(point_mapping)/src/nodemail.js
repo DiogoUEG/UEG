@@ -7,7 +7,6 @@ module.exports = (email, nome, mensagem, anexo) => {
         secure: false, //SSL/TLS
         auth: {
             user: 'testdevmrb27@gmail.com',
-            pass: 'test@ueg27',
             type: "OAuth2",
             clientId: "ufcj2mh7l399f73i57tvdhso6vn31c7u.apps.googleusercontent.com",
             clientSecret: "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",
