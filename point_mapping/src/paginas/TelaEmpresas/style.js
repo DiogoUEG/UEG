@@ -19,8 +19,8 @@ const styles = StyleSheet.create({
    paddingLeft:15,
  },
  DescriptionTask:{
-  width:"75%",
-  alignContent:"flex-start",
+  width:"80%",
+  alignContent:'center',
   backgroundColor:"#f5f5f5cf",
   padding:12,
   paddingHorizontal: 20,

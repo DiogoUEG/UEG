@@ -5,7 +5,7 @@ import styles from './style';
 import * as Location from 'expo-location';
 import db from '../../config/firebase';
 import {useNavigation} from '@react-navigation/native';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 
 export default function Empresa({ route, navigation }) {
     const [errorMsg, setErrorMsg] = useState(null);
@@ -16,14 +16,9 @@ export default function Empresa({ route, navigation }) {
     const d = new Date()
     const dayName = days[d.getDay()]
     const User = route.params.uid
-    onSnapshot(query(collection(db, 'Usuario-Empresa'), where("IdUsuario", "==", User), where("Nome_do_dia", "==", dayName)), (query) => {
-        const list = [];
-        query.forEach((doc) => {
-            list.push({ ...doc.data(), id: doc.id });
-        });
-        setEmpresa(list);
-    });
+    const useremp = query(collection(db, 'Usuario-Empresa'), where("IdUsuario", "==", User), where("Nome_do_dia", "==", dayName))
     useEffect(() => {
+
         (async () => {
 
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -36,22 +31,22 @@ export default function Empresa({ route, navigation }) {
             setLatitude(location.coords.latitude);
             setLongitude(location.coords.longitude);
         })();
+
+        onSnapshot(useremp, (query) => {
+            const list = [];
+            query.forEach((doc) => {
+                list.push({ ...doc.data(), id: doc.id });
+            });
+            setEmpresa(list);
+        })
     }, []);
 
-    function getDistanceFromLatLonInKm(IdEmpresa) {
+    async function getDistanceFromLatLonInKm(IdEmpresa) {
         var position2 = { lat: latitude, lng: longitude }
-        query(collection(db, 'Empresa'), where("Nome", "==", IdEmpresa))
-        .then((userCredential) => {
-            var position1 = userCredential
-        })
-        .catch((error) => {
-            setErroLogin(true)
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(errorCode)
-            console.log(errorMessage)
-            // ..
-        });
+        var p = query(collection(db, 'Empresa'), where("Nome", "==", IdEmpresa))
+        const querySnapshot = await getDocs(p);
+        var position1
+        querySnapshot.forEach((doc) => position1 = doc.data());
         console.log(position1)
         var deg2rad = function (deg) { return deg * (Math.PI / 180); },
             R = 6371,
@@ -63,7 +58,6 @@ export default function Empresa({ route, navigation }) {
                 * Math.sin(dLng / 2) * Math.sin(dLng / 2),
             c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         var resultado = (R * c * 1000).toFixed();
-        console.log(resultado);
         var resposta;
         if (resultado > 100) {
             resposta = false;
