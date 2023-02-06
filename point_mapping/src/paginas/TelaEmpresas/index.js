@@ -1,26 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Platform, Text, View, KeyboardAvoidingView, FlatList } from 'react-native';
+import { Platform, Text, View, KeyboardAvoidingView, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import styles from './style';
 import * as Location from 'expo-location';
 import db from '../../config/firebase';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { collection, getDocs, onSnapshot, query, where } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { EvilIcons } from '@expo/vector-icons'
 
 export default function Empresa({ route, navigation }) {
+    const [refreshing, setRefreshing] = useState(false)
     const [errorMsg, setErrorMsg] = useState(null);
     const [latitude, setLatitude] = useState(null);
     const [longitude, setLongitude] = useState(null);
     const [empresa, setEmpresa] = useState(null);
+    const [User, setUser] = useState(null);
+    const auth = getAuth();
     const days = ["Domingo", "Segunda-Feira", "Terça-Feira", "Quarta-Feira", "Quinta-Feira", "Sexta-Feira", "Sábado"]
     const d = new Date()
     const dayName = days[d.getDay()]
-    const User = route.params.uid
     const useremp = query(collection(db, 'Usuario-Empresa'), where("IdUsuario", "==", User), where("Nome_do_dia", "==", dayName))
     useEffect(() => {
 
         (async () => {
-
+            CarregarEmpresa();
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 setErrorMsg('Permission to access location was denied');
@@ -32,6 +36,15 @@ export default function Empresa({ route, navigation }) {
             setLongitude(location.coords.longitude);
         })();
 
+
+    }, []);
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        CarregarEmpresa();
+    }
+
+    function CarregarEmpresa() {
         onSnapshot(useremp, (query) => {
             const list = [];
             query.forEach((doc) => {
@@ -39,7 +52,14 @@ export default function Empresa({ route, navigation }) {
             });
             setEmpresa(list);
         })
-    }, []);
+        setRefreshing(false);
+    }
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            setUser(user.uid)
+        } else {
+        }
+    });
 
     async function getDistanceFromLatLonInKm(IdEmpresa) {
         var position2 = { lat: latitude, lng: longitude }
@@ -47,7 +67,6 @@ export default function Empresa({ route, navigation }) {
         const querySnapshot = await getDocs(p);
         var position1
         querySnapshot.forEach((doc) => position1 = doc.data());
-        console.log(position1)
         var deg2rad = function (deg) { return deg * (Math.PI / 180); },
             R = 6371,
             dLat = deg2rad(position2.lat - position1.lat),
@@ -58,13 +77,14 @@ export default function Empresa({ route, navigation }) {
                 * Math.sin(dLng / 2) * Math.sin(dLng / 2),
             c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         var resultado = (R * c * 1000).toFixed();
+        console.log(resultado)
         var resposta;
         if (resultado > 100) {
             resposta = false;
-        }else{
+        } else {
             resposta = true;
         }
-        return (navigation.navigate("Ponto", {resultado: resposta, lat: position2.lat, lng: position2.lng, empresa: IdEmpresa}));
+        return (navigation.navigate("Ponto", { resultado: resposta, lat: position2.lat, lng: position2.lng, empresa: IdEmpresa }));
     }
 
     let text = '';
@@ -73,9 +93,14 @@ export default function Empresa({ route, navigation }) {
     }
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={styles.container}>
+        <View style={styles.container}>
+            <View style={styles.Tasks2}>
+                <TouchableOpacity style={styles.refreshButton} onPress={() => CarregarEmpresa()}>
+                    <EvilIcons name="refresh" color={'black'} size={35} />
+                </TouchableOpacity>
+                <Text style={styles.refreshButton2}>Agenda do Dia</Text>
+            </View>
+            <View>
             {text !== ''
                 ?
                 <View>
@@ -100,8 +125,16 @@ export default function Empresa({ route, navigation }) {
                     <Text style={styles.warningAlert}>Waiting..</Text>
                 </View>
                 :
-                <View style={styles.container}>
+                <View style={styles.flat}>
+                    
                     <FlatList
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                            />
+                        }
+                        extraData={empresa}
                         showsVerticalScrollIndicator={false}
                         data={empresa}
                         renderItem={({ item }) => {
@@ -117,7 +150,7 @@ export default function Empresa({ route, navigation }) {
                     />
                 </View>
             }
-
-        </KeyboardAvoidingView>
+            </View>
+        </View>
     );
 }

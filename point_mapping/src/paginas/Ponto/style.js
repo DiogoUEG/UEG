@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
     containerlogo: {
       flex: 1,
       justifyContent: 'center',
+      paddingTop: Platform.OS === "ios" ? 0 : 50
     },
     container: {
       flex: 1,

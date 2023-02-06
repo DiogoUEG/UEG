@@ -3,17 +3,22 @@ import { View, Text, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity
 import styles from "./style";
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { BottomTabBar, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import Empresa from "../TelaEmpresas";
+import Relatorio from "../Relatorio";
+import { useNavigation } from "@react-navigation/native";
 
-export default function Login( {navigation} ) {
+export default function Login({navigation}) {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [errorLogin, setErroLogin] = useState("")
+
 
     const loginFirebase = () => {
         const auth = getAuth();
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                navigation.navigate("Empresa", {uid: userCredential.user.uid,});
+                navigation.navigate("TelaInicial");
             })
             .catch((error) => {
                 setErroLogin(true)
@@ -23,7 +28,7 @@ export default function Login( {navigation} ) {
                 console.log(errorMessage)
                 // ..
             });
-            
+
     }
 
     useEffect(() => {
@@ -63,10 +68,6 @@ export default function Login( {navigation} ) {
                     <Text style={styles.textButtonLogin}>Login</Text>
                 </TouchableOpacity>
             }
-            <Text style={styles.linkSubscribe}
-                onPress={() => navigation.navigate("LoginEmpresa")}>
-                Se cadastre Agora...
-            </Text>
             <View style={{ height: 100 }} />
         </KeyboardAvoidingView>
     )
